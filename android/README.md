@@ -71,3 +71,7 @@ See ../LICENSE and ../DATA_SOURCES.md.
 Supported layers activate automatically on first launch of this version. Later layer choices are retained. Tap **Live** to enable aircraft, military aircraft and satellites and check public-feed connectivity inside the Android browser. The aircraft diagnostic samples Leicester; the globe feed follows the current view. The report includes HTTP failures and the displayed layer state. Server settings are available from this dialog or by holding Live.
 
 The APK workflow also verifies all three feeds through an Android emulator WebView, in addition to JVM transport tests. When bundling manually, copy `android/live-controls.js` to `android/app/src/main/assets/live-controls.js` alongside the frontend and fold CSS.
+
+### Version 0.4.0 dropdown menu
+
+Tap **Menu ▾** to open Live feed status, Data layers, Location, Visual presets, Display settings, Scenes, Flight context, Cameras, Globe actions or Server settings. Controls start hidden and open one scrollable panel at a time. Close, tapping the globe or Android Back dismisses the panel. Hiding controls keeps active data layers running. Copy `android/menu-controls.js` to the bundled assets when building manually.

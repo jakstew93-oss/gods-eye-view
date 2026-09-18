@@ -50,15 +50,14 @@ public class MainActivity extends Activity {
         });
         LinearLayout toolbar = new LinearLayout(this);
         TextView title = new TextView(this);
-        title.setText("EYE FOLD 0.3.0");
+        title.setText("EYE FOLD 0.4.0");
         title.setTextColor(Color.rgb(0, 212, 255));
         title.setGravity(android.view.Gravity.CENTER_VERTICAL);
         title.setPadding(16, 0, 0, 0);
         toolbar.addView(title, new LinearLayout.LayoutParams(0, dp(48), 1));
         Button settings = new Button(this);
-        settings.setText("Live");
-        settings.setOnClickListener(view -> showLiveStatus());
-        settings.setOnLongClickListener(view -> { showConnection(); return true; });
+        settings.setText("Menu ▾");
+        settings.setOnClickListener(view -> showMenu(settings));
         toolbar.addView(settings);
         root.addView(toolbar);
         web = new WebView(this);
@@ -82,7 +81,7 @@ public class MainActivity extends Activity {
                     if (result != null) return new WebResourceResponse(result.mime, "UTF-8", result.status,
                         result.status == 200 ? "OK" : "Live feed unavailable", result.headers,
                         new ByteArrayInputStream(result.body.getBytes(StandardCharsets.UTF_8)));
-                    byte[] body = "{\"error\":\"This feed needs a connected server. Tap Connect.\"}"
+                    byte[] body = "{\"error\":\"This feed needs a connected server. Open Menu > Server settings.\"}"
                         .getBytes(StandardCharsets.UTF_8);
                     return new WebResourceResponse("application/json", "UTF-8", 503,
                         "Server connection required", Collections.singletonMap("Cache-Control", "no-store"),
@@ -120,13 +119,15 @@ public class MainActivity extends Activity {
                         + "(()=>{let s=document.getElementById('native-fold-style');"
                         + "if(!s){s=document.createElement('style');s.id='native-fold-style';"
                         + "document.head.append(s);}s.textContent=" + JSONObject.quote(css) + ";})();", null);
-                    try (var script = getAssets().open("live-controls.js")) {
+                    for (String asset : new String[]{"live-controls.js", "menu-controls.js"}) {
+                    try (var script = getAssets().open(asset)) {
                         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
                         byte[] buffer = new byte[8192];
                         int count;
                         while ((count = script.read(buffer)) != -1) bytes.write(buffer, 0, count);
                         view.evaluateJavascript(bytes.toString(StandardCharsets.UTF_8.name()), value ->
                             android.util.Log.i("FoldLive", "Controls evaluated: " + value));
+                    }
                     }
                 } catch (Exception error) {
                     android.util.Log.e("FoldLive", "Controls injection failed", error);
@@ -165,9 +166,31 @@ public class MainActivity extends Activity {
 
     WebView browserForTest() { return web; }
 
+    private void showMenu(View anchor) {
+        android.widget.PopupMenu menu = new android.widget.PopupMenu(this, anchor);
+        String[] labels = {"Live feed status", "Data layers", "Location", "Visual presets",
+            "Display settings", "Scenes", "Flight context", "Cameras", "Globe actions",
+            "Server settings", "Close controls"};
+        String[] panels = {"", "data-panel", "location-bar", "control-panel",
+            "pp-toggles", "scene-panel", "global-context-panel", "cctv-panel", "top-center-actions"};
+        for (int i = 0; i < labels.length; i++) menu.getMenu().add(0, i, i, labels[i]);
+        menu.setOnMenuItemClickListener(item -> {
+            int id = item.getItemId();
+            if (id == 0) { web.evaluateJavascript("window.foldClosePanel?.();", null); showLiveStatus(); }
+            else if (id == 9) { web.evaluateJavascript("window.foldClosePanel?.();", null); showConnection(); }
+            else if (id == 10) web.evaluateJavascript("window.foldClosePanel?.();", null);
+            else web.evaluateJavascript("window.foldOpenPanel?.(" + JSONObject.quote(panels[id]) + ")", result -> {
+                if (!"true".equals(result)) Toast.makeText(this, "Globe controls are still loading",
+                    Toast.LENGTH_SHORT).show();
+            });
+            return true;
+        });
+        menu.show();
+    }
+
     private void showLiveStatus() {
         web.evaluateJavascript("window.foldLiveStart?.();window.foldLiveCheck?.();", null);
-        AlertDialog dialog = new AlertDialog.Builder(this).setTitle("Live feeds — 0.3.0")
+        AlertDialog dialog = new AlertDialog.Builder(this).setTitle("Live feeds — 0.4.0")
             .setMessage("Checking feeds…").setPositiveButton("Close", null)
             .setNeutralButton("Server settings", (d, which) -> showConnection())
             .setNegativeButton("Refresh", null).create();
@@ -248,7 +271,11 @@ public class MainActivity extends Activity {
         }
     }
     @Override public void onBackPressed() {
-        if (web.canGoBack()) web.goBack(); else super.onBackPressed();
+        web.evaluateJavascript("window.foldClosePanel?.() || false", result -> {
+            if (!"true".equals(result)) {
+                if (web.canGoBack()) web.goBack(); else MainActivity.super.onBackPressed();
+            }
+        });
     }
     @Override protected void onPause() { web.onPause(); super.onPause(); }
     @Override protected void onResume() { super.onResume(); if (web != null) web.onResume(); }

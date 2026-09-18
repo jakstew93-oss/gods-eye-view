@@ -112,3 +112,92 @@ html[data-fold-app='true'] #command-dock .panel-title,
 html[data-fold-app='true'] #command-dock .location-toolbar-label {
   max-width: none;
 }
+
+/* The native dropdown owns Fold navigation; one existing panel opens at a time. */
+html[data-fold-menu='true'] :is(#title-bar, #style-indicator) {
+  display: none !important;
+}
+html[data-fold-menu='true'] :is(#left-panel-stack, #right-context-rail, #command-dock) {
+  display: contents !important;
+}
+html[data-fold-menu='true'] :is(#data-panel, #location-bar, #control-panel, #pp-toggles, #scene-panel, #global-context-panel, #cctv-panel, #top-center-actions):not(.fold-menu-panel) {
+  display: none !important;
+}
+html[data-fold-menu='true'] body .fold-menu-panel {
+  display: block !important;
+  position: fixed !important;
+  top: 64px !important;
+  right: 12px !important;
+  bottom: auto !important;
+  left: auto !important;
+  width: min(380px, calc(100vw - 24px)) !important;
+  min-width: 0 !important;
+  max-width: calc(100vw - 24px) !important;
+  height: auto !important;
+  max-height: calc(100dvh - 80px) !important;
+  overflow: auto !important;
+  overscroll-behavior: contain;
+  transform: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  z-index: 20000 !important;
+  background: rgba(8, 20, 30, 0.98) !important;
+  border: 1px solid rgba(0, 212, 255, 0.4);
+  border-radius: 14px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+html[data-fold-menu='true'] body .fold-menu-panel > :is(.panel-inner, .location-inner, .data-panel-inner, .scene-panel-inner, .cctv-panel-inner, .global-context-panel-inner) {
+  width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box;
+}
+html[data-fold-menu='true'] #command-dock .fold-menu-panel .dock-popover-content {
+  position: static !important;
+  display: flex !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-height: none !important;
+  box-sizing: border-box;
+  transform: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  overflow: visible !important;
+}
+html[data-fold-menu='true'] .fold-menu-panel :is(.dock-pin-btn, .panel-collapse-btn, .panel-mini-status, .location-mini-status) {
+  display: none !important;
+}
+html[data-fold-menu='true'] .fold-menu-panel .data-toggle-list {
+  max-height: none !important;
+}
+html[data-fold-menu='true'] #top-center-actions.fold-menu-panel {
+  display: flex !important;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px;
+  box-sizing: border-box;
+}
+html[data-fold-menu='true'] #fold-panel-close:not([hidden]) {
+  display: block;
+  position: fixed;
+  top: 8px;
+  right: 12px;
+  min-height: 48px !important;
+  padding: 0 18px;
+  border: 1px solid rgba(0, 212, 255, 0.4);
+  border-radius: 12px;
+  color: #d9f7ff;
+  background: #08141e;
+  font-size: 16px;
+  z-index: 20001;
+}
+
+html[data-fold-menu='true'] .fold-menu-panel :is(.cctv-controls, .scene-controls, .global-context-modes) {
+  flex-wrap: wrap;
+}
+html[data-fold-menu='true'] .fold-menu-panel select {
+  max-width: 100%;
+  min-width: 0 !important;
+}

@@ -34,6 +34,7 @@ jobs:
           cp -R dist/. android/app/src/main/assets/
           cp src/ui/styles/fold.css android/app/src/main/assets/fold.css
           cp android/feed-test.html android/app/src/main/assets/feed-test.html
+          cp android/menu-controls.js android/app/src/main/assets/menu-controls.js
           cp android/live-controls.js android/app/src/main/assets/live-controls.js
           cp LICENSE android/app/src/main/assets/LICENSE.txt
       - uses: actions/setup-java@v4
