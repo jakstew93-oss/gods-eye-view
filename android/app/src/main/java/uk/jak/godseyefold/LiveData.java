@@ -196,7 +196,7 @@ public final class LiveData {
             connection.setConnectTimeout(8000); connection.setReadTimeout(20000);
             connection.setInstanceFollowRedirects(false);
             connection.setRequestProperty("User-Agent",
-                "Gods-Eye-Fold/0.2 (+https://github.com/jakstew93-oss/gods-eye-view)");
+                "Gods-Eye-Fold/0.3 (+https://github.com/jakstew93-oss/gods-eye-view)");
             connection.setRequestProperty("Accept", route.group == null ? "application/json" : "text/plain");
             int status = connection.getResponseCode();
             if (status != 200) {
@@ -246,7 +246,12 @@ public final class LiveData {
             remember(route.url, new Entry(value, now, route.ttl));
             return value;
         } catch (Exception failure) {
-            Result failed = error(502, "Live provider could not be reached or returned invalid data");
+            String detail = failure instanceof java.net.UnknownHostException ? "DNS lookup failed"
+                : failure instanceof java.net.SocketTimeoutException ? "Connection timed out"
+                : failure instanceof javax.net.ssl.SSLException ? "Secure connection failed"
+                : failure instanceof IllegalArgumentException ? "Provider returned invalid data"
+                : "Network or provider response failed";
+            Result failed = error(502, detail);
             remember(route.url, new Entry(failed, now, 30000));
             return failed;
         } finally { if (connection != null) connection.disconnect(); }

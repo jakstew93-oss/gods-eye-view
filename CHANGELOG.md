@@ -1,5 +1,7 @@
 # Changelog
 
+Fold version 0.3.0 enables supported live layers on first launch and provides a Live dialog showing browser feed counts/errors and displayed layer states. Aircraft diagnostics sample Leicester while the rendered civilian feed follows the current view. Android WebView integration testing is included in the APK workflow; phone validation remains pending.
+
 Android Fold test wrapper: see [Android setup](android/README.md). Bundled Android mode now fetches regional civilian aircraft, military contacts and satellite catalogs through a fixed native HTTPS transport. Other server-backed feeds require a connected HTTPS deployment. Device validation remains pending.
 
 - Distinguish PARTIAL vessel snapshots from STALE data in the layer panel, with
