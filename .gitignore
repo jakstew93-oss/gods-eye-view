@@ -12,3 +12,10 @@ output/
 3d-models/
 pinokio/ENVIRONMENT
 pinokio/.installed
+
+# Android generated assets and local tool settings
+android/.gradle/
+android/**/build/
+android/local.properties
+android/app/src/main/assets/
+qa-fold/

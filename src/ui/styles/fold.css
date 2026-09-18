@@ -1,0 +1,203 @@
+/* Android wrapper enables these overrides on bundled and connected pages. */
+html[data-fold-app='true'] button,
+html[data-fold-app='true'] select {
+  min-height: 44px !important;
+  min-width: 44px !important;
+  touch-action: manipulation;
+}
+
+html[data-fold-app='true'] #command-dock .btn-label {
+  font-size: 12px;
+}
+
+html[data-fold-app='true'] #command-dock :is(.location-pill, .poi-pill) {
+  font-size: 12px;
+  min-height: 44px;
+}
+
+html[data-fold-app='true'] #command-dock .dock-popover-content {
+  max-height: 40dvh;
+  overflow-y: auto;
+}
+
+html[data-fold-app='true'] #command-dock .dock-pin-btn {
+  position: static;
+  align-self: flex-end;
+  flex-shrink: 0;
+}
+
+html[data-fold-app='true'] #command-dock .location-city-row {
+  flex-wrap: wrap;
+  overflow: visible;
+}
+
+html[data-fold-app='true'] #command-dock .location-search-wrap {
+  flex: 1 1 160px;
+}
+
+html[data-fold-app='true'] #command-dock #location-search {
+  min-height: 44px;
+  font-size: 16px;
+}
+
+html[data-fold-app='true'] #command-dock .panel-title,
+html[data-fold-app='true'] #command-dock .location-toolbar-label {
+  font-size: 10px;
+  letter-spacing: 1px;
+}
+
+/* Voice needs native permission handling and is deferred for this test build. */
+html[data-fold-app='true'] #gev-voice-control {
+  display: none !important;
+}
+
+html[data-fold-app='true'] #command-dock {
+  --dock-voice-width: 0px;
+}
+
+@media (max-width: 900px) {
+  html[data-fold-app='true'] #command-dock {
+    --dock-side-compact: min(160px, calc((100vw - 24px) / 2));
+    --dock-unified-width: calc(var(--dock-side-compact) * 2);
+    --dock-location-open: calc(100vw - 32px);
+    --dock-presets-open: calc(100vw - 32px);
+    --dock-popover-mobile-width: calc(100vw - 32px);
+    max-width: calc(100vw - 24px);
+  }
+}
+
+/* On the cover display, the two rails share a scrollable strip above the dock. */
+@media (max-width: 600px) {
+  html[data-fold-app='true'] #left-panel-stack {
+    top: 76px;
+    bottom: auto;
+    right: auto;
+    left: 12px;
+    width: calc(50vw - 18px);
+    max-height: 32dvh;
+    overflow-y: auto;
+  }
+
+  html[data-fold-app='true'] #right-context-rail {
+    top: 76px;
+    bottom: auto;
+    left: auto;
+    right: 12px;
+    width: calc(50vw - 18px);
+    max-height: 32dvh;
+    overflow-y: auto;
+  }
+
+  html[data-fold-app='true'] .panel-title {
+    font-size: 10px;
+    letter-spacing: 1px;
+  }
+
+  html[data-fold-app='true'] #title-bar {
+    top: 12px;
+    left: 12px;
+  }
+}
+
+/* Keep wing order deterministic before and after the runtime injects voice. */
+html[data-fold-app='true'] #command-dock > #location-bar {
+  order: 0;
+}
+
+html[data-fold-app='true'] #command-dock > #control-panel {
+  order: 2;
+}
+
+html[data-fold-app='true'] #command-dock .panel-title,
+html[data-fold-app='true'] #command-dock .location-toolbar-label {
+  max-width: none;
+}
+
+/* The native dropdown owns Fold navigation; one existing panel opens at a time. */
+html[data-fold-menu='true'] :is(#title-bar, #style-indicator) {
+  display: none !important;
+}
+html[data-fold-menu='true'] :is(#left-panel-stack, #right-context-rail, #command-dock) {
+  display: contents !important;
+}
+html[data-fold-menu='true'] :is(#data-panel, #location-bar, #control-panel, #pp-toggles, #scene-panel, #global-context-panel, #cctv-panel, #top-center-actions):not(.fold-menu-panel) {
+  display: none !important;
+}
+html[data-fold-menu='true'] body .fold-menu-panel {
+  display: block !important;
+  position: fixed !important;
+  top: 64px !important;
+  right: 12px !important;
+  bottom: auto !important;
+  left: auto !important;
+  width: min(380px, calc(100vw - 24px)) !important;
+  min-width: 0 !important;
+  max-width: calc(100vw - 24px) !important;
+  height: auto !important;
+  max-height: calc(100dvh - 80px) !important;
+  overflow: auto !important;
+  overscroll-behavior: contain;
+  transform: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  z-index: 20000 !important;
+  background: rgba(8, 20, 30, 0.98) !important;
+  border: 1px solid rgba(0, 212, 255, 0.4);
+  border-radius: 14px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+html[data-fold-menu='true'] body .fold-menu-panel > :is(.panel-inner, .location-inner, .data-panel-inner, .scene-panel-inner, .cctv-panel-inner, .global-context-panel-inner) {
+  width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box;
+}
+html[data-fold-menu='true'] #command-dock .fold-menu-panel .dock-popover-content {
+  position: static !important;
+  display: flex !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-height: none !important;
+  box-sizing: border-box;
+  transform: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  overflow: visible !important;
+}
+html[data-fold-menu='true'] .fold-menu-panel :is(.dock-pin-btn, .panel-collapse-btn, .panel-mini-status, .location-mini-status) {
+  display: none !important;
+}
+html[data-fold-menu='true'] .fold-menu-panel .data-toggle-list {
+  max-height: none !important;
+}
+html[data-fold-menu='true'] #top-center-actions.fold-menu-panel {
+  display: flex !important;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px;
+  box-sizing: border-box;
+}
+html[data-fold-menu='true'] #fold-panel-close:not([hidden]) {
+  display: block;
+  position: fixed;
+  top: 8px;
+  right: 12px;
+  min-height: 48px !important;
+  padding: 0 18px;
+  border: 1px solid rgba(0, 212, 255, 0.4);
+  border-radius: 12px;
+  color: #d9f7ff;
+  background: #08141e;
+  font-size: 16px;
+  z-index: 20001;
+}
+
+html[data-fold-menu='true'] .fold-menu-panel :is(.cctv-controls, .scene-controls, .global-context-modes) {
+  flex-wrap: wrap;
+}
+html[data-fold-menu='true'] .fold-menu-panel select {
+  max-width: 100%;
+  min-width: 0 !important;
+}
