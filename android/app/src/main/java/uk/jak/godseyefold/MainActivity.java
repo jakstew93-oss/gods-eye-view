@@ -50,14 +50,15 @@ public class MainActivity extends Activity {
         });
         LinearLayout toolbar = new LinearLayout(this);
         TextView title = new TextView(this);
-        title.setText("GOD'S EYE FOLD");
+        title.setText("EYE FOLD 0.3.0");
         title.setTextColor(Color.rgb(0, 212, 255));
         title.setGravity(android.view.Gravity.CENTER_VERTICAL);
         title.setPadding(16, 0, 0, 0);
         toolbar.addView(title, new LinearLayout.LayoutParams(0, dp(48), 1));
         Button settings = new Button(this);
-        settings.setText("Connect");
-        settings.setOnClickListener(view -> showConnection());
+        settings.setText("Live");
+        settings.setOnClickListener(view -> showLiveStatus());
+        settings.setOnLongClickListener(view -> { showConnection(); return true; });
         toolbar.addView(settings);
         root.addView(toolbar);
         web = new WebView(this);
@@ -118,6 +119,13 @@ public class MainActivity extends Activity {
                         + "(()=>{let s=document.getElementById('native-fold-style');"
                         + "if(!s){s=document.createElement('style');s.id='native-fold-style';"
                         + "document.head.append(s);}s.textContent=" + JSONObject.quote(css) + ";})();", null);
+                    try (var script = getAssets().open("live-controls.js")) {
+                        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                        byte[] buffer = new byte[8192];
+                        int count;
+                        while ((count = script.read(buffer)) != -1) bytes.write(buffer, 0, count);
+                        view.evaluateJavascript(bytes.toString(StandardCharsets.UTF_8.name()), null);
+                    }
                 } catch (Exception error) {
                     Toast.makeText(MainActivity.this, "Fold controls could not load", Toast.LENGTH_LONG).show();
                 }
@@ -147,6 +155,52 @@ public class MainActivity extends Activity {
 
     private int dp(int value) { return Math.round(value * getResources().getDisplayMetrics().density); }
     private String startUrl() { return prefs.getString("url", LOCAL); }
+
+    WebView browserForTest() { return web; }
+
+    private void showLiveStatus() {
+        web.evaluateJavascript("window.foldLiveStart?.();window.foldLiveCheck?.();", null);
+        AlertDialog dialog = new AlertDialog.Builder(this).setTitle("Live feeds — 0.3.0")
+            .setMessage("Checking feeds…").setPositiveButton("Close", null)
+            .setNeutralButton("Server settings", (d, which) -> showConnection())
+            .setNegativeButton("Refresh", null).create();
+        dialog.show();
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(v ->
+            web.evaluateJavascript("window.foldLiveStart?.();window.foldLiveCheck?.();", null));
+        Runnable poll = new Runnable() {
+            @Override public void run() {
+                if (!dialog.isShowing() || isDestroyed()) return;
+                web.evaluateJavascript("JSON.stringify({check:window.foldLiveDiagnostic||{state:'Globe loading…',results:[]},"
+                    + "layers:['flights','military','satellites'].map(id=>({id,text:document.querySelector('[data-layer-id='+id+']')?.innerText||'Not ready'}))})",
+                    encoded -> {
+                        if (!dialog.isShowing()) return;
+                        try {
+                            String decoded = new org.json.JSONArray("[" + encoded + "]").getString(0);
+                            JSONObject value = new JSONObject(decoded);
+                            JSONObject check = value.getJSONObject("check");
+                            StringBuilder message = new StringBuilder(check.getString("state"));
+                            org.json.JSONArray results = check.getJSONArray("results");
+                            for (int i = 0; i < results.length(); i++) {
+                                JSONObject result = results.getJSONObject(i);
+                                message.append("\n\n").append(result.getString("name")).append(": ");
+                                if (result.optInt("status") == 200)
+                                    message.append(result.optInt("count")).append(" records");
+                                else message.append("HTTP ").append(result.optInt("status"))
+                                    .append(" — ").append(result.optString("detail"));
+                            }
+                            message.append("\n\nDisplayed layers:");
+                            org.json.JSONArray layers = value.getJSONArray("layers");
+                            for (int i = 0; i < layers.length(); i++)
+                                message.append("\n").append(layers.getJSONObject(i).getString("text"));
+                            message.append("\n\nAircraft check uses Leicester. The globe shows aircraft around your current view.");
+                            dialog.setMessage(message.toString());
+                        } catch (Exception error) { dialog.setMessage("Globe is still loading. Tap Refresh when ready."); }
+                    });
+                web.postDelayed(this, 1000);
+            }
+        };
+        web.post(poll);
+    }
 
     private void showConnection() {
         EditText input = new EditText(this);

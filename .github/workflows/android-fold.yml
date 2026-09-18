@@ -33,6 +33,7 @@ jobs:
           mkdir -p android/app/src/main/assets
           cp -R dist/. android/app/src/main/assets/
           cp src/ui/styles/fold.css android/app/src/main/assets/fold.css
+          cp android/live-controls.js android/app/src/main/assets/live-controls.js
           cp LICENSE android/app/src/main/assets/LICENSE.txt
       - uses: actions/setup-java@v4
         with:
@@ -50,6 +51,27 @@ jobs:
         run: gradle -p android :app:testDebugUnitTest :app:assembleDebug :app:lintDebug
         env:
           FOLD_LIVE_SMOKE: '1'
+      - name: Enable emulator acceleration
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Test feeds inside Android WebView
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          script: gradle -p android :app:connectedDebugAndroidTest
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Android-WebView-test-reports
+          path: |
+            android/app/build/reports/androidTests
+            android/app/build/outputs/androidTest-results
       - uses: actions/upload-artifact@v4
         with:
           name: Gods-Eye-Fold-test-APK

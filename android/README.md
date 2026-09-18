@@ -65,3 +65,9 @@ has not been run for this Android wrapper.
 
 Source copyright and third-party asset/data terms are retained from upstream.
 See ../LICENSE and ../DATA_SOURCES.md.
+
+### Version 0.3.0 live controls
+
+Supported layers activate automatically on first launch of this version. Later layer choices are retained. Tap **Live** to enable aircraft, military aircraft and satellites and check public-feed connectivity inside the Android browser. The aircraft diagnostic samples Leicester; the globe feed follows the current view. The report includes HTTP failures and the displayed layer state. Server settings are available from this dialog or by holding Live.
+
+The APK workflow also verifies all three feeds through an Android emulator WebView, in addition to JVM transport tests. When bundling manually, copy `android/live-controls.js` to `android/app/src/main/assets/live-controls.js` alongside the frontend and fold CSS.
