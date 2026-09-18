@@ -1,0 +1,100 @@
+/* Android wrapper enables these overrides on bundled and connected pages. */
+html[data-fold-app='true'] button,
+html[data-fold-app='true'] select {
+  min-height: 44px;
+  min-width: 44px;
+  touch-action: manipulation;
+}
+
+html[data-fold-app='true'] #command-dock .btn-label {
+  font-size: 12px;
+}
+
+html[data-fold-app='true'] #command-dock :is(.location-pill, .poi-pill) {
+  font-size: 12px;
+  min-height: 44px;
+}
+
+html[data-fold-app='true'] #command-dock .dock-popover-content {
+  max-height: 40dvh;
+  overflow-y: auto;
+}
+
+html[data-fold-app='true'] #command-dock .dock-pin-btn {
+  position: static;
+  align-self: flex-end;
+  flex-shrink: 0;
+}
+
+html[data-fold-app='true'] #command-dock .location-city-row {
+  flex-wrap: wrap;
+  overflow: visible;
+}
+
+html[data-fold-app='true'] #command-dock .location-search-wrap {
+  flex: 1 1 160px;
+}
+
+html[data-fold-app='true'] #command-dock #location-search {
+  min-height: 44px;
+  font-size: 16px;
+}
+
+html[data-fold-app='true'] #command-dock .panel-title,
+html[data-fold-app='true'] #command-dock .location-toolbar-label {
+  font-size: 10px;
+  letter-spacing: 1px;
+}
+
+/* Voice needs native permission handling and is deferred for this test build. */
+html[data-fold-app='true'] #gev-voice-control {
+  display: none !important;
+}
+
+html[data-fold-app='true'] #command-dock {
+  --dock-voice-width: 0px;
+}
+
+@media (max-width: 900px) {
+  html[data-fold-app='true'] #command-dock {
+    --dock-side-compact: min(160px, calc((100vw - 24px) / 2));
+    --dock-unified-width: calc(var(--dock-side-compact) * 2);
+    --dock-location-open: calc(100vw - 32px);
+    --dock-presets-open: calc(100vw - 32px);
+    --dock-popover-mobile-width: calc(100vw - 32px);
+    max-width: calc(100vw - 24px);
+  }
+}
+
+/* On the cover display, the two rails share a scrollable strip above the dock. */
+@media (max-width: 600px) {
+  html[data-fold-app='true'] #left-panel-stack {
+    top: 76px;
+    bottom: auto;
+    right: auto;
+    left: 12px;
+    width: calc(50vw - 18px);
+    max-height: 32dvh;
+    overflow-y: auto;
+  }
+
+  html[data-fold-app='true'] #right-context-rail {
+    top: 76px;
+    bottom: auto;
+    left: auto;
+    right: 12px;
+    width: calc(50vw - 18px);
+    max-height: 32dvh;
+    overflow-y: auto;
+  }
+
+  html[data-fold-app='true'] .panel-title {
+    font-size: 10px;
+    letter-spacing: 1px;
+  }
+
+  html[data-fold-app='true'] #title-bar {
+    top: 12px;
+    left: 12px;
+  }
+}

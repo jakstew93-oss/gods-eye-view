@@ -1,0 +1,71 @@
+name: Android Fold APK
+
+on:
+  push:
+    branches: [android-fold]
+  pull_request:
+    paths: ['android/**', 'src/ui/styles/fold.css', 'scripts/qa-fold-layout.mjs', '.github/workflows/android-fold.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PUPPETEER_SKIP_DOWNLOAD: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24.14.0
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run check:boundaries
+      - run: npm run build
+      - name: Bundle frontend and license
+        run: |
+          mkdir -p android/app/src/main/assets
+          cp -R dist/. android/app/src/main/assets/
+          cp src/ui/styles/fold.css android/app/src/main/assets/fold.css
+          cp LICENSE android/app/src/main/assets/LICENSE.txt
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.11.1'
+      - name: Build installable test APK
+        run: gradle -p android :app:assembleDebug :app:lintDebug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Gods-Eye-Fold-test-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 30
+
+  fold-layout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24.14.0
+          cache: npm
+      - run: npm ci
+      - run: node scripts/qa-fold-layout.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Fold-layout-screenshots
+          path: qa-fold/*.png

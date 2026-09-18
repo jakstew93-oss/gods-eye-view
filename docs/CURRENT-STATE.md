@@ -1,5 +1,7 @@
 # God's Eye View Current State
 
+Android Fold test wrapper: see [Android setup](../android/README.md). Bundled mode provides the frontend only; server-backed feeds require a connected HTTPS deployment. Device validation remains pending.
+
 Vessel snapshot completeness is separate from freshness. A current snapshot with
 rejected or duplicate records shows PARTIAL with accepted/received counts; stale
 or unknown freshness and transport failures retain their warnings. Partial

@@ -1,5 +1,7 @@
 # Changelog
 
+Android Fold test wrapper: see [Android setup](android/README.md). Bundled mode provides the frontend only; server-backed feeds require a connected HTTPS deployment. Device validation remains pending.
+
 - Distinguish PARTIAL vessel snapshots from STALE data in the layer panel, with
   accepted-record counts and unchanged retention, freshness and outage safeguards.
 
