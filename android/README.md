@@ -46,8 +46,8 @@ src/ui/styles/fold.css and LICENSE into android/app/src/main/assets
 gradle -p android :app:assembleDebug :app:lintDebug
 ```
 
-The workflow runs upstream unit tests, package boundary checks, frontend build,
-Android compilation/lint and static-template layout checks. Layout screenshots
+Upstream CI runs unit tests and package boundary checks. The Android workflow
+runs the frontend build, Android compilation/lint and static-template layout checks. Layout screenshots
 do not establish WebGL performance or real-device compatibility: test pinching,
 rotation, folding, resuming and imagery on the phone before treating this as
 validated. Upstream npm run test:track still needs the complete dev server and
