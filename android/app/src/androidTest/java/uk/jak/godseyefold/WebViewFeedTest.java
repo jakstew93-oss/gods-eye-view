@@ -30,13 +30,13 @@ public class WebViewFeedTest {
         context.getSharedPreferences("connection", Context.MODE_PRIVATE).edit()
             .clear().putBoolean("explained", true).commit();
         try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
-            scenario.onActivity(activity -> activity.browserForTest().loadDataWithBaseURL(
-                "https://appassets.androidplatform.net/index.html",
-                "<!doctype html><html><head><meta charset='utf-8'></head><body>Feed test</body></html>",
-                "text/html", "UTF-8", null));
+            scenario.onActivity(activity -> activity.browserForTest().loadUrl(
+                "https://appassets.androidplatform.net/feed-test.html"));
             long deadline = System.currentTimeMillis() + 60000;
             while (!"true".equals(evaluate(scenario, "typeof window.foldLiveCheck === 'function'"))) {
-                assertTrue("Native controls were not injected", System.currentTimeMillis() < deadline);
+                assertTrue("Native controls were not injected: " + evaluate(scenario,
+                    "JSON.stringify({url:location.href,ready:document.readyState,html:document.documentElement.outerHTML,ua:navigator.userAgent})"),
+                    System.currentTimeMillis() < deadline);
                 Thread.sleep(250);
             }
             evaluate(scenario, "window.foldLiveCheck();");

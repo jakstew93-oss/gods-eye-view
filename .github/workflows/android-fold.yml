@@ -33,6 +33,7 @@ jobs:
           mkdir -p android/app/src/main/assets
           cp -R dist/. android/app/src/main/assets/
           cp src/ui/styles/fold.css android/app/src/main/assets/fold.css
+          cp android/feed-test.html android/app/src/main/assets/feed-test.html
           cp android/live-controls.js android/app/src/main/assets/live-controls.js
           cp LICENSE android/app/src/main/assets/LICENSE.txt
       - uses: actions/setup-java@v4
@@ -64,7 +65,8 @@ jobs:
           arch: x86_64
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          script: gradle -p android :app:connectedDebugAndroidTest
+          script: |
+            gradle -p android :app:connectedDebugAndroidTest || { adb logcat -d -s FoldLive chromium AndroidRuntime; exit 1; }
       - uses: actions/upload-artifact@v4
         if: always()
         with:

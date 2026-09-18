@@ -104,6 +104,7 @@ public class MainActivity extends Activity {
                 return true;
             }
             @Override public void onPageFinished(WebView view, String url) {
+                android.util.Log.i("FoldLive", "Page finished: " + url);
                 try {
                     String css;
                     try (var stream = getAssets().open("fold.css")) {
@@ -124,14 +125,20 @@ public class MainActivity extends Activity {
                         byte[] buffer = new byte[8192];
                         int count;
                         while ((count = script.read(buffer)) != -1) bytes.write(buffer, 0, count);
-                        view.evaluateJavascript(bytes.toString(StandardCharsets.UTF_8.name()), null);
+                        view.evaluateJavascript(bytes.toString(StandardCharsets.UTF_8.name()), value ->
+                            android.util.Log.i("FoldLive", "Controls evaluated: " + value));
                     }
                 } catch (Exception error) {
+                    android.util.Log.e("FoldLive", "Controls injection failed", error);
                     Toast.makeText(MainActivity.this, "Fold controls could not load", Toast.LENGTH_LONG).show();
                 }
             }
         });
         web.setWebChromeClient(new WebChromeClient() {
+            @Override public boolean onConsoleMessage(android.webkit.ConsoleMessage message) {
+                android.util.Log.i("FoldLive", message.message() + " at " + message.lineNumber());
+                return true;
+            }
             @Override public boolean onShowFileChooser(WebView view, ValueCallback<Uri[]> callback,
                 FileChooserParams params) {
                 if (fileResult != null) fileResult.onReceiveValue(null);
