@@ -48,7 +48,8 @@ try {
         const rect = tray.getBoundingClientRect();
         const button = document.getElementById(id + '-toggle').getBoundingClientRect();
         return { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom,
-          buttonHeight: button.height, visible: getComputedStyle(tray).visibility };
+          buttonHeight: button.height, visible: getComputedStyle(tray).visibility,
+          dock: document.getElementById('command-dock').getBoundingClientRect().toJSON() };
       }, panel);
       assert.equal(geometry.visible, 'visible');
       assert.ok(geometry.left >= -1 && geometry.right <= width + 1,

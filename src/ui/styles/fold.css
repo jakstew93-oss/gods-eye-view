@@ -1,8 +1,8 @@
 /* Android wrapper enables these overrides on bundled and connected pages. */
 html[data-fold-app='true'] button,
 html[data-fold-app='true'] select {
-  min-height: 44px;
-  min-width: 44px;
+  min-height: 44px !important;
+  min-width: 44px !important;
   touch-action: manipulation;
 }
 
@@ -97,4 +97,18 @@ html[data-fold-app='true'] #command-dock {
     top: 12px;
     left: 12px;
   }
+}
+
+/* Keep wing order deterministic before and after the runtime injects voice. */
+html[data-fold-app='true'] #command-dock > #location-bar {
+  order: 0;
+}
+
+html[data-fold-app='true'] #command-dock > #control-panel {
+  order: 2;
+}
+
+html[data-fold-app='true'] #command-dock .panel-title,
+html[data-fold-app='true'] #command-dock .location-toolbar-label {
+  max-width: none;
 }

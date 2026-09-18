@@ -3,8 +3,11 @@ name: Android Fold APK
 on:
   push:
     branches: [android-fold]
-  pull_request:
-    paths: ['android/**', 'src/ui/styles/fold.css', 'scripts/qa-fold-layout.mjs', '.github/workflows/android-fold.yml']
+
+
+concurrency:
+  group: android-fold-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
