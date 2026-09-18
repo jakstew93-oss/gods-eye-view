@@ -70,12 +70,17 @@ public class MainActivity extends Activity {
         config.setAllowContentAccess(false);
         config.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
         config.setMediaPlaybackRequiresUserGesture(true);
+        LiveData live = new LiveData(new java.io.File(getCacheDir(), "satellite-catalogs"));
         WebViewAssetLoader loader = new WebViewAssetLoader.Builder()
             .addPathHandler("/", new WebViewAssetLoader.AssetsPathHandler(this)).build();
         web.setWebViewClient(new WebViewClient() {
             @Override public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
                 Uri uri = request.getUrl();
                 if (HOST.equals(uri.getHost()) && uri.getPath().startsWith("/api/")) {
+                    LiveData.Result result = live.fetch(uri.toString(), request.getMethod());
+                    if (result != null) return new WebResourceResponse(result.mime, "UTF-8", result.status,
+                        result.status == 200 ? "OK" : "Live feed unavailable", result.headers,
+                        new ByteArrayInputStream(result.body.getBytes(StandardCharsets.UTF_8)));
                     byte[] body = "{\"error\":\"This feed needs a connected server. Tap Connect.\"}"
                         .getBytes(StandardCharsets.UTF_8);
                     return new WebResourceResponse("application/json", "UTF-8", 503,
@@ -133,7 +138,7 @@ public class MainActivity extends Activity {
         if (!prefs.getBoolean("explained", false)) {
             new AlertDialog.Builder(this).setTitle("Your first Fold test")
                 .setMessage("The globe is bundled with this app. Internet is needed for map imagery. "
-                    + "Some live feeds and AI features need your own server; use Connect when it is ready. "
+                    + "Aircraft and satellite catalogs now load directly. Ships, cameras and AI still need a server. "
                     + "Voice and downloading scene exports are not supported in this first build.")
                 .setPositiveButton("Open globe", (dialog, which) ->
                     prefs.edit().putBoolean("explained", true).apply()).show();

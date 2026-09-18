@@ -1,4 +1,4 @@
-# God's Eye Fold — first Android test
+# God's Eye Fold — live-feed Android test
 
 This branch packages the original frontend as an Android WebView application.
 The app has its own launcher icon and resizes without intentionally recreating
@@ -24,10 +24,19 @@ the previous one, which clears local settings and scenes.
   actual WebView width; no unverified device dimensions are assumed.
 - Fold/rotation config changes retain the current WebView. Android may still
   restart or kill the process under memory pressure.
-- The APK does **not** bundle a Node server. Local /api requests return explicit
-  JSON 503 responses. Server-backed aircraft, ships, cameras, satellite proxies,
-  terrain helpers, voice and AI features must not be advertised as operational
-  in bundled mode. Some direct-source data may work independently.
+- Civilian aircraft use adsb.lol within 250 nautical miles of the viewed area.
+  Aircraft ages, heights and speeds preserve the existing frontend contract.
+  Military contacts use adsb.lol's military endpoint; receiver coverage varies.
+- Satellite catalogs use CelesTrak. Positions are orbital predictions, not live
+  telemetry. Catalogs are cached for six hours, including across app restarts.
+- Public USGS earthquakes already load directly in the frontend.
+- The APK does **not** bundle a Node server. A fixed native HTTPS transport now
+  serves aircraft and satellite routes. Other local /api requests return explicit
+  JSON 503 responses: ships, cameras, terrain helpers and AI still need a server.
+  Aircraft enrichment and historical track backfill are not added in this update.
+- Native requests have timeouts, 8 MiB response caps, bounded caches and failure
+  cooldowns; expired data is not silently presented as a new successful snapshot.
+  Network access and reachable upstream providers are required.
 - Tap **Connect** to enter an HTTPS address hosting your own complete frontend
   and provider APIs. Native Fold styles are also applied to that connected page.
   Empty address returns to the bundled globe.
@@ -43,11 +52,12 @@ Run npm ci and npm run build from the repository root. Copy dist contents,
 src/ui/styles/fold.css and LICENSE into android/app/src/main/assets
 (rename LICENSE to LICENSE.txt), then:
 ```sh
-gradle -p android :app:assembleDebug :app:lintDebug
+gradle -p android :app:testDebugUnitTest :app:assembleDebug :app:lintDebug
 ```
 
 Upstream CI runs unit tests and package boundary checks. The Android workflow
-runs the frontend build, Android compilation/lint and static-template layout checks. Layout screenshots
+runs the frontend build, native contract tests, public-feed network smoke tests,
+Android compilation/lint and static-template layout checks. Layout screenshots
 do not establish WebGL performance or real-device compatibility: test pinching,
 rotation, folding, resuming and imagery on the phone before treating this as
 validated. Upstream npm run test:track still needs the complete dev server and

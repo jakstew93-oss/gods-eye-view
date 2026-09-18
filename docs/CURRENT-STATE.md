@@ -1,6 +1,6 @@
 # God's Eye View Current State
 
-Android Fold test wrapper: see [Android setup](../android/README.md). Bundled mode provides the frontend only; server-backed feeds require a connected HTTPS deployment. Device validation remains pending.
+Android Fold test wrapper: see [Android setup](../android/README.md). Bundled Android mode now fetches regional civilian aircraft, military contacts and satellite catalogs through a fixed native HTTPS transport. Other server-backed feeds require a connected HTTPS deployment. Device validation remains pending.
 
 Vessel snapshot completeness is separate from freshness. A current snapshot with
 rejected or duplicate records shows PARTIAL with accepted/received counts; stale
